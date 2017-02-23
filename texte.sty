@@ -1,0 +1,174 @@
+\newcommand*{\middlefoot}{\textrm{\thepage{}}}
+\newcommand*{\righthead}{\small\insertsep{\tb@var@numero}{--}{{\bf \tb@var@titrecourt}}}
+\newcommand*{\lefthead}{\small\insertsep{\tb@var@matiere}{--}{\tb@var@code}}
+
+\ifthenelse{\boolean{tb@mode@ficheprog}}{%
+  \renewcommand*{\righthead}{\small\tb@var@numero{}}
+}{}%
+
+\AtBeginDocument{%
+ % \lhead{\small\insertsep{\tb@var@code}{--}{{\sc \tb@var@matiere}}}
+  \lhead{\lefthead}
+  \chead{}
+  \rhead{\righthead}
+  \cfoot{\middlefoot}
+  \lfoot{\scriptsize\insertsep{T\'el\'ecom Bretagne}{--}{\tb@var@type}}
+  \rfoot{\scriptsize \@date{}}
+  \ifthenelse{\boolean{tb@mode@booklet}}{%
+    \colorlet{background}{gray!10}
+  }{%
+    \colorlet{background}{gray!30}
+  }
+  \colorlet{backgroundCorrection}{red!10}
+}
+
+\ifthenelse{\boolean{tb@mode@devoir}}{%
+  \RequirePackage{devoir}
+  \ifthenelse{\boolean{tb@mode@correction}}{\withoutIdentity}{}
+}{%
+  \newcommand*\cartouche{}
+}
+
+\RequirePackage{ifpdf}
+\ifthenelse{\boolean{tb@boolean@handout} \OR \boolean{tb@mode@devoir}}{
+  \RequirePackage{url}
+  
+}{%
+  \ifpdf
+    \RequirePackage[pdftex]{hyperref}
+  \else
+    \RequirePackage[dvips]{hyperref}
+  \fi
+}
+\RequirePackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{\translate{Definition}}
+
+\ifthenelse{\boolean{tb@mode@booklet}}{%
+
+  \RequirePackage[a4paper,textwidth=18cm,textheight=25.8cm,bmargin=1cm]{geometry}%,showframe
+  \setlength{\headsep}{0pt}
+  \setlength{\headheight}{0pt}
+  \setlength{\footskip}{1cm}
+
+  \ifthenelse{\boolean{tb@mode@tc} \AND \boolean{tb@mode@po}}{
+    \pagestyle{plain} }
+  {
+    \pagestyle{empty}}
+  }{%
+  \RequirePackage[a4paper,textwidth=17.5cm,textheight=24.5cm,bmargin=2cm]{geometry}
+  \setlength{\headsep}{15pt}
+  \setlength{\headheight}{14pt}
+  \pagestyle{fancy}
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+
+\ifthenelse{\boolean{tb@boolean@handout}}{%
+  \RequirePackage{pgfpages}
+  \pgfpagesuselayout{2 on 1}[a4paper,landscape]
+}{}
+
+% The title page
+\renewcommand{\maketitle}{
+  \ifthenelse{\boolean{tb@mode@booklet}}{}{%
+    \par%
+  }%
+  \begin{center}
+    \ifthenelse{\boolean{tb@mode@booklet}}{}{%
+      \includegraphics[width=4cm]{logotb}%
+      \vspace*{1.0em}\par%
+    }%
+    \color{blue}\LARGE\bf% 
+    \ifx\tb@var@numero\@empty%
+    \else%
+      \tb@var@numero{} -- %
+    \fi%
+    \tb@var@titre%
+    % Attention les titres et sous titres sont des \long qui valent {} quand elles sont vides
+    \ifx\tb@var@soustitre\tb@empty@title%
+    \else%
+      \\[2mm]\Large\bf \tb@var@soustitre%
+    \fi%
+    \ifthenelse{\boolean{tb@mode@booklet} \OR \boolean{tb@mode@ficheprog}}{}{%
+      \\[2mm]\large\bf 
+      \ifx\tb@var@matiere\@empty%
+        \ifx\tb@var@code\@empty%
+        \else%
+          \tb@var@code{}%
+        \fi%
+      \else%
+        \ifx\tb@var@code\@empty%
+          \tb@var@matiere{}%
+        \else%
+          \tb@var@matiere{} -- \tb@var@code{}%
+        \fi%
+      \fi%
+      %\tb@var@matiere -- \tb@var@code%
+    }%
+    \ifthenelse{\boolean{tb@boolean@withDate}}{
+      \\[2mm]\large\bf \@date%
+    }{}
+    \ifthenelse{\boolean{tb@boolean@withAuthors}}{
+      \\[2mm]\bf\sc \@author%
+    }{}
+    \ifthenelse{\boolean{tb@mode@correction} \AND \boolean{tb@mode@msc}}{
+      \\[2mm]{\color{red}\Large\bf Solution}%
+    }{
+      \ifthenelse{\boolean{tb@mode@correction}}{%
+        \\[2mm]{\color{red}\Large\bf Correction}%
+      }{}
+    }
+%    \ifthenelse{\boolean{tb@mode@correction}}{%
+%      \\[2mm]{\color{red}\Large\bf Correction}%
+%    }{}
+  \end{center}%
+  \ifthenelse{\boolean{tb@mode@booklet}}{}{%
+    \thispagestyle{plain}
+    \addvspace{2em}
+    \begin{center}
+      \cartouche
+    \end{center}
+  }%
+}
+\newcommand{\maketitlenew}{
+  \par
+  \begin{center}
+    \includegraphics[width=4cm]{get_bretag_cont_rgb}
+    \vspace*{1.0em}\par
+    \color{blue}\LARGE\bf% 
+    \ifx\tb@var@numero\@empty%
+    \else%
+      \tb@var@numero{} -- %
+    \fi%
+    \tb@var@titre%
+    % Attention les titres et sous titres sont des \long qui valent {} quand elles sont vides
+    \ifx\tb@var@soustitre\tb@empty@title%
+    \else%
+      \\[2mm]\Large\bf \tb@var@soustitre%
+    \fi%
+    \ifthenelse{\boolean{tb@boolean@withDate}}{
+      \\[2mm]\large\bf \@date%
+    }{}
+    \ifthenelse{\boolean{tb@boolean@withAuthors}}{
+      \\[2mm]\bf\sc \@author%
+    }{}
+    \ifthenelse{\boolean{tb@mode@correction} \AND \boolean{tb@mode@msc}}{
+      \\[2mm]{\color{red}\Large\bf Solution}%
+    }{
+      \ifthenelse{\boolean{tb@mode@correction}}{%
+        \\[2mm]{\color{red}\Large\bf Correction}%
+      }{}
+    }
+ %   \ifthenelse{\boolean{tb@mode@correction}}{%
+ %     \\[2mm]{\color{red}\Large\bf Correction}%
+ %   }{}
+  \end{center}%
+  \thispagestyle{plain}
+  \addvspace{2em}
+  \begin{center}
+    \cartouche
+  \end{center}
+}
+

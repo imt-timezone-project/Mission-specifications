@@ -1,0 +1,91 @@
+\RequirePackage{listings}
+\RequirePackage{TBcolors}
+
+\lstdefinelanguage{myjava}{
+  keywords={
+    abstract,boolean,break,byte,case,catch,char,class,%
+    const,continue,default,do,double,else,extends,false,final,%
+    finally,float,for,goto,if,implements,import,instanceof,int,%
+    interface,label,long,native,new,null,package,private,protected,%
+    public,return,short,static,super,switch,this,throw,%
+    throws,transient,true,try,void,volatile,while,String},%
+  morekeywords={
+    [3]synchronized,wait,notify,notifyAll,yield,sleep,join,%
+    live,accept,when,become,Incompatible,methods,SyncClass,FuncClass,%
+    states,preconditions,MapClass,maps,over,map,Queue,CurrentCall,%
+  },%
+  sensitive,%
+%  alsoletter={+-!*=<>/\%|\&\{\}?},%
+%  ndkeywords={/,+,-,!,--,++,*,=,==,!=,<,>,<=,>=,\%,|,||,\&,\&\&,\{,\}},%
+  morecomment=[l]//,%
+  morecomment=[s]{/*}{*/},%
+  morestring=[b]",%
+  morestring=[b]',%
+}%[keywords,comments,strings]%
+\lstset{
+  language=myjava,
+  keywordstyle=\bfseries,
+  keywordstyle={[3]\color{RougeBrique}\bfseries},
+  ndkeywordstyle=,
+  commentstyle=\rmfamily\color{gray},
+  stringstyle=\color{Violet},
+  identifierstyle=\color{Bleu},
+  moredelim=**[is][\color{Orange}]{/*|*/}{/*|*/},
+  moredelim=**[is][\color{Vert}]{/*T*/}{/*T*/},
+  extendedchars=true,
+  flexiblecolumns=true,
+  showstringspaces=false,
+  texcl=true}
+
+\lstdefinestyle{smallframe}{%
+  basicstyle=\small\ttfamily,
+  backgroundcolor=\color{background},
+  frame=single,
+  frameround=tttt%
+}
+\lstdefinestyle{correction}{%
+  basicstyle=\small\ttfamily,
+%  backgroundcolor=\color{backgroundCorrection},
+%  frame=single,
+%  rulecolor=\color{red},
+%  frameround=tttt%
+}
+\lstdefinestyle{numbers}{
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny%
+}
+
+\newcommand{\java}[2][]{{\color{black}\ttfamily\lstinline[#1]!#2!}}
+\newcommand{\javawithspaces}[1]{{\color{black}\ttfamily\lstset{showstringspaces=true}\lstinline!#1!}}
+
+\ifthenelse{\boolean{tb@mode@cours}}{%
+  \ifthenelse{\boolean{tb@mode@fc}}{%
+    \lstnewenvironment{Java}[1][]{\bgroup\color{black}\lstset{basicstyle=\footnotesize\ttfamily,#1}}{\egroup}%
+  }{%
+    \lstnewenvironment{Java}[1][]{\bgroup\color{black}\lstset{style=numbers,basicstyle=\footnotesize\ttfamily,#1}}{\egroup}%
+  }
+}{%
+  \lstnewenvironment{Java}[1][]{\lstset{basicstyle=\ttfamily,#1}}{}%
+}
+
+\newcommand{\inputJava}[2][]{%
+  \ifthenelse{\boolean{tb@mode@cours}}{%
+    \ifthenelse{\boolean{tb@mode@fc}}{%
+      {\color{black}\lstinputlisting[basicstyle=\footnotesize\ttfamily,tabsize=2,#1]{#2}}%
+    }{%
+      {\color{black}\lstinputlisting[style=numbers,basicstyle=\footnotesize\ttfamily,tabsize=2,#1]{#2}}%
+    }
+  }{%
+    \ifthenelse{\boolean{tb@mode@devoir}}{%
+      \lstinputlisting[basicstyle=\ttfamily,tabsize=2,#1]{#2}%
+    }{%
+      \ifthenelse{\boolean{tb@boolean@inCorrection}}{%
+        {\color{black}\lstinputlisting[style=correction,tabsize=2,#1]{#2}}%
+      }{%
+        \lstinputlisting[style=smallframe,tabsize=2,#1]{#2}%
+      }
+    }
+  }
+}
+

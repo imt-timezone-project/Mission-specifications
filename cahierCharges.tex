@@ -1,0 +1,380 @@
+\documentclass[majeure,gl]{tb}
+
+
+
+
+\date{24 février 2017} 
+\numero{} 
+\title[Cahier des charges]{Cahier des charges} 
+\subtitle{Projet DEV \\ MOA : Remy HUBSCHER, Nicolas JULLIEN \\ Dernière révision : 1}
+\author{MOE : Henri AYNIÉ, Yanni CUI, Thomas ROKICKI \\ \small(Groupe 9)}
+
+
+
+
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{version}
+\excludeversion{solution}
+\includeversion{indication}
+
+
+\begin{document}
+
+\maketitle
+
+\clearpage
+\renewcommand\contentsname{Sommaire}
+\tableofcontents
+
+
+\clearpage
+
+
+
+
+
+
+\clearpage
+\section{Introduction}
+
+\subsection{Objet du document}
+Ce document décrit tous les services que doit rendre le prototype de
+logiciel de gestion de fuseaux horaires ainsi
+que toutes les exigences que ces services doivent satisfaire.
+
+
+\subsection{Portée du document}
+
+Ce document est destiné à expliciter et formaliser le besoin du client
+ dans le cadre du projet DEV qui se
+déroule pendant le 1er semestre de 2017.
+
+
+
+\subsection{Abréviations}
+\label{sec:abreviation}
+
+\begin{tabular}[c]{|p{1cm}|p{2.6cm}|p{12.4cm}|}
+  \hline
+  \textbf{Abr.} & \textbf{Signification} & \textbf{Libellé}
+  \\\hline
+  \textit{VIT} & \textit{Vitale} & \textit{Exigence fonctionnelle ou non fonctionnelle indispensable}
+  \\\hline
+  \textit{IMP} & \textit{Importante} & \textit{Exigence souhaitée mais non exigée}
+  \\\hline
+  \textit{MIN} & \textit{Mineure} &
+  \textit{Exigence non exigée immédiatement, mais qui devra être prise en compte
+    ultèrieurement par le produit (impact sur l'évolutivité)}
+  \\\hline
+  \textit{CNIL} & \textit{Commission Nationale de l'Informatique et des Libertés} &
+  \textit{Institution indépendante chargée de veiller au respect de l'identité humaine, de la vie privée et des libertées dans le monde numérique en France}
+  \\\hline
+  \textit{GPL} & \textit{Licence Publique Générale GNU} &
+  \textit{Licence qui fixe les conditions légales de distribution des logiciels libres du projet GNU}
+  \\\hline
+\end{tabular}
+
+\section{Les objectifs du produit}
+
+\subsection{Définition du produit}
+Le produit demandé par le client est un prototype pour la gestion d'un
+ensemble d'utilisateurs voulant organiser des évènements sur plusieurs fuseaux horaires. Un dossier d'étude complet accompagnera le code source du
+prototype. Ce dossier inclura l'analyse des besoins  exprimés par le
+client, la description conceptuelle de la solution ainsi que les tests
+et la procédure de recette pour validation.
+
+
+\subsection{Contexte d'exploitation du produit}
+Le produit sera accessible par les utilisateurs à partir d'un
+ordinateur de type PC classique à l'aide d'une interface web.
+
+\section{Exigences sur le produit}
+\label{sec:exigence}
+
+\subsection{Capacités Fonctionnelles}
+\label{fonc}
+
+\subsubsection{Description des fonctionnalités}
+
+\paragraph{Informations utilisateur.} Les fonctions suivantes servent à obtenir les informations sur l'utilisateur
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}[c]{|p{3cm}|p{13cm}|}
+ \hline
+ \textbf{Nom} &
+ \textbf{Entrer position utilisateur}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre sa position dans le système
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Arrivée de l'utilisateur dans le système OU demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Position de l'utilisateur dans une liste
+ \\\hline
+ \textbf{Sorties} &
+ Erreur si contraintes non respectées.
+ \\\hline
+ \textbf{Contraintes} &
+ La localisation doit être connue du site
+ \\\hline
+ \textbf{Importance} &
+ VIT
+ \\\hline 
+ 
+ \hline
+ \textbf{Nom} &
+ \textbf{Entrer fuseau utilisateur}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre son fuseau horaire
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Arrivée de l'utilisateur dans le système OU demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Selection du fuseau dans une liste.
+ \\\hline
+ \textbf{Sorties} &
+ Erreur si contraintes non respectées.
+ \\\hline
+ \textbf{Contraintes} &
+ Le fuseau doit exister
+ \\\hline
+ \textbf{Importance} &
+ VIT
+ \\\hline 
+
+          \end{tabular}
+\end{table}
+
+
+ \paragraph{Consultation des horaires dans d'autres fuseaux} Les fonctions suivantes servent à permettre à l'utilisateur de voir l'heure qui l'intéresse dans d'autres fuseaux.
+ 
+ \begin{table}[ht]
+  \centering
+  \begin{tabular}[c]{|p{3cm}|p{13cm}|}
+
+\hline
+ \textbf{Nom} &
+ \textbf{Entrer fuseau partenaire}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre le fuseau ou la position du partenaire
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Position ou fuseau
+ \\\hline
+ \textbf{Sorties} &
+ Erreur si contraintes non respectées.
+ \\\hline
+ \textbf{Contraintes} &
+ La localisation doit être connue du site
+ \\\hline
+ \textbf{Importance} &
+ VIT
+ \\\hline 
+ 
+ \hline
+ \textbf{Nom} &
+ \textbf{Consulter heure}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre l'heure qu'il veut voir dans les différents fuseaux et le système l'affiche
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Une heure
+ \\\hline
+ \textbf{Sorties} &
+ L'heure sélectionnée dans les différents fuseaux
+ \\\hline
+ \textbf{Contraintes} &
+ L'heure doit exister
+ \\\hline
+ \textbf{Importance} &
+ VIT
+ \\\hline 
+
+    
+          \end{tabular}
+\end{table}
+
+
+\clearpage
+
+\paragraph{Version améliorée} Les fonctions suivantes sont utilisées pour une version plus développée du logiciel.
+
+ \begin{table}[ht]
+  \centering
+  \begin{tabular}[c]{|p{3cm}|p{13cm}|}
+
+\hline
+ \textbf{Nom} &
+ \textbf{Créer partenaire}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre le fuseau ou la position du partenaire qui sera retenue par le système entre différentes connexions.
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Position ou fuseau et nom du partenaire
+ \\\hline
+ \textbf{Sorties} &
+ Erreur si contraintes non respectées.
+ \\\hline
+ \textbf{Contraintes} &
+ La localisation doit être connue du site, toutes les entrées respectées
+ \\\hline
+ \textbf{Importance} &
+ IMP
+ \\\hline 
+ 
+ \hline
+ \textbf{Nom} &
+ \textbf{Consulter heure avec partenaire}
+ \\\hline
+ \textbf{Description} &
+ L'utilisateur entre l'heure qu'il veut voir et le système l'affiche dans les fuseaux des différents partenaires
+ \\\hline
+ \textbf{Évènement déclencheur} &
+ Demande explicite de l'utilisateur
+ \\\hline
+ 
+ \textbf{Entrées} &
+ Une heure
+ \\\hline
+ \textbf{Sorties} &
+ L'heure sélectionnée dans les différents fuseaux
+ \\\hline
+ \textbf{Contraintes} &
+ L'heure doit exister
+ \\\hline
+ \textbf{Importance} &
+ IMP
+ \\\hline 
+
+    
+          \end{tabular}
+\end{table}
+
+
+\subsubsection{Interopérabilité}
+Le prototype logiciel sera hébergé sur le web. Il sera accessible depuis au moins un navigateur.
+
+\subsection{Exigences non fonctionnelles}
+\label{nonfonc}
+
+\subsubsection{Rendement}
+Le temps de réponse maximum autorisé du site sera de ~250 ms afin que l’utilisateur ne voit pas le retard entre les actions.
+
+\subsubsection{Facilité d'utilisation}
+Un utilisateur qui ne connaît pas le système pourra exploiter le système en au plus 30 minutes.
+
+
+\subsubsection{Maintenabilité}
+Le code respectera les conventions de nommages usuelles et sera rédigé et commenté en Anglais
+
+
+\subsubsection{Portabilité}
+Le prototype fonctionnera sur n'importe quel système d'exploitation et à au moins un navigateur.
+
+\subsection{Exigences concernant le développement du produit}
+\label{exigences}
+
+\subsubsection{Objectifs de délais}
+Le produit ainsi qu’un rapport et un poster sont à terminer avant la fin du projet en Mai 2017 \\
+Des pénalités seront appliquées en cas de retard.
+
+\subsubsection{Objectifs de coûts}
+Tous les outils utilisés pour la réalisation du produitétant libres et gratuits, le projet n’aura pas de coût financier. \\
+L’effort estimé est de 108h par élèves.
+
+\subsubsection{Exigences de réalisation}
+Le prototype sera programmé dans le langage Elm.
+ Toutes les informations ajoutées dans le code
+source le seront en anglais afin de faciliter l'intégration
+d'ingénieurs étrangers.
+
+Le code sera livré sous licence GPL, la documentation le sera sous
+licence Creative Commons CC-by-sa.
+
+
+\section{Synthèse des exigences}
+
+\subsection{Hiérarchisation des exigences fonctionnelles} 
+\label{sec:hiera}
+
+
+
+
+
+\begin{center}
+\begin{tabular}[c]{|p{10cm}|l|}
+\hline
+\textbf{Nom fonction} & \textbf{Importance}\\
+\hline
+Entrer position utilisateur
+& VIT\\
+\hline
+Entrer fuseau utilisateur
+& VIT\\
+\hline
+Entrer fuseau partenaire
+& VIT\\
+\hline
+Consulter heure
+& VIT\\
+\hline
+\hline
+Créer partenaire
+& IMP\\
+\hline
+Consulter heure avec partenaire
+& IMP\\
+\hline
+
+
+
+\end{tabular}
+\end{center}
+
+\subsection{Hiérarchisation des exigences non-fonctionnelles} 
+
+
+\begin{center}
+\begin{tabular}[c]{|p{10cm}|l|}
+\hline
+\textbf{Exigence} & \textbf{Importance}\\
+\hline
+Maintenabilité
+&VIT\\
+\hline
+Facilité d'utilisation
+&VIT\\
+\hline
+Portabilité
+&IMP\\
+\hline
+Rendement
+&MIN\\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

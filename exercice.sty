@@ -1,0 +1,386 @@
+\RequirePackage{ifthen}
+\RequirePackage{xcolor}
+
+%%%%%%%%%%%%%%%%%
+%%% Booleans
+%%%%%%%%%%%%%%%%%
+
+% Are exos simples (not special paragraphes)
+\newboolean{exercice@boolean@simple}
+\setboolean{exercice@boolean@simple}{false}
+
+% Do we want total duration or points calculated
+\newboolean{exercice@boolean@total}
+\setboolean{exercice@boolean@total}{false}
+
+% Determines if the answers appear
+\newboolean{exercice@boolean@answer}
+\setboolean{exercice@boolean@answer}{false}
+
+% Are all exos in the list of exercise
+\newboolean{exercice@boolean@allExoInLoe}
+\setboolean{exercice@boolean@allExoInLoe}{false}
+
+% User interface for the previous switches
+\newcommand*{\SetSimple}{\setboolean{exercice@boolean@simple}{true}}
+\newcommand*{\SetTotal}{\setboolean{exercice@boolean@total}{true}}
+\newcommand*{\SetAnswerPlace}{\setboolean{exercice@boolean@answer}{true}}
+\newcommand*{\allExoInLoe}{\setboolean{exercice@boolean@allExoInLoe}{true}}
+
+% Some internal switches
+\newboolean{exercice@print@timing}
+\setboolean{exercice@print@timing}{false}
+\newboolean{exercice@print@points}
+\setboolean{exercice@print@points}{false}
+
+%%%%%%%%%%%%%%%%%
+%%% Counters
+%%%%%%%%%%%%%%%%%
+
+% Counter for exercises and question (default behavior maybe changed by the options of the exercice environment
+\newcounter{exercice@exercice}
+\newcounter{exercice@question}[exercice@exercice]
+
+\newcommand*{\resetExerciceCounter}{
+  \setcounter{exercice@exercice}{0}
+}
+
+% The total time of the current compilation
+\newcounter{tempstotal}
+% The total time of the previous compilation (taken from aux file)
+\newcounter{maxtempstotal}
+
+\newcounter{exercice@timing@total}
+\newcounter{exercice@points@integer@total}
+\newcounter{exercice@points@decimal@total}
+
+% By default exercises will be typesetted as sections
+\renewcommand{\theexercice@question}{\theexercice@exercice.\arabic{exercice@question}}
+% Code taken from article.cls
+\newcommand\exercice@section{%
+  \@startsection{}{}{\z@}%
+  {-3.5ex \@plus -1ex \@minus -.2ex}%
+  {2.3ex \@plus.2ex}%
+  {\normalfont\Large\bfseries}*%
+}
+\newcommand\exercice@subsection{%
+  \@startsection{}{}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\large\bfseries}*%
+}
+% Code taken from french.ldf
+\def\exercice@colon{%
+  \iflanguage{french}{%
+    \ifhmode
+      \ifdim\lastskip>\z@
+        \unskip\penalty\@M\Fcolonspace
+      \else
+        \FDP@colonspace
+      \fi
+    \fi
+    \string:%
+  }{\string:}}
+\RequirePackage{amssymb}
+\newcommand{\triangledanslamarge}{\makebox[0pt][r]{$\rhd$\hspace*{0.5ex}}}
+
+\def\exercice@timing{}
+\def\exercice@points{}
+\newcommand{\listofexercises}{{\large\@starttoc{loe}}}
+\newcommand{\l@exo}[2]{\par\medskip\noindent#1 \hfill #2\par}
+
+\newcommand{\totalduration}{90}
+\newcommand{\SetTempsTotal}[1]{\setcounter{maxtempstotal}{#1}}
+% Calcul d'une dur�e en heure � partir d'une dur�e en minute
+% Si il n'y pas d'argument utilise le temps total
+\newcounter{minutesaconvertir}
+\newcounter{heures}
+\newcounter{minutes}
+\newcommand{\total}{\mnToPoint{\themaxtempstotal}}
+\newcommand{\duree}[1][]{%
+  \edef\@tempa{#1}%
+  \ifx\@tempa\@empty%
+    \setcounter{minutesaconvertir}{\themaxtempstotal}%
+  \else%
+    \setcounter{minutesaconvertir}{#1}%
+  \fi  %
+  \setcounter{heures}{\theminutesaconvertir/60}%
+  \setcounter{minutes}{\theminutesaconvertir - \theheures * 60}%
+  \theheures{}h\ifnum\c@minutes=0\else\two@digits\theminutes\fi%
+}
+
+\AtEndDocument{%
+  \ifnum\c@maxtempstotal=\c@tempstotal
+  \else
+    \@latex@warning{Vous devriez relancer LaTeX pour afficher le temps total correct.}
+  \fi
+  \if@filesw\immediate\write\@auxout{\string\SetTempsTotal{\the\c@tempstotal}}\fi
+}
+\newcounter{x}
+\newcounter{y}
+\newcounter{z}
+\newcommand{\mnToPoint}[1]{%
+  \setcounter{x}{20*#1/\totalduration}%
+  \setcounter{y}{200*#1/\totalduration-10*\value{x}}%
+  \setcounter{z}{2000*#1/\totalduration-100*\value{x}-10*\value{y}}%
+  \ifnum\value{z}<5\else\stepcounter{y}\fi%
+  \ifnum\value{y}=0\relax%
+    \thex%
+  \else%
+    \thex,\they%
+  \fi%
+}
+\newcommand*{\mnToPoint@integer}[1]{20*#1/\totalduration}
+\newcommand*{\mnToPoint@decimalI}[1]{200*#1/\totalduration-(20*#1/\totalduration)*10}
+\newcommand*{\mnToPoint@decimalII}[1]{2000*#1/\totalduration-(200*#1/\totalduration)*10}
+
+\newcommand*{\exercice@set@timing}[1]{
+  \setcounter{exercice@timing@total}{#1}%
+  \setcounter{exercice@points@integer@total}{\mnToPoint@integer{#1}}
+  \setcounter{exercice@points@decimal@total}{
+    200*#1/\totalduration-10*\value{exercice@points@integer@total}
+  }
+  \setcounter{z}{\mnToPoint@decimalII{#1}}%2000*#1/\totalduration-(200*#1/\totalduration)*10}
+  \ifnum\value{z}<5\else\stepcounter{exercice@points@decimal@total}\fi
+}
+\newcounter{exercice@temp}
+\newcommand*{\exercice@add@timing}[1]{
+  \addtocounter{exercice@timing@total}{#1}%
+  % Integer part
+  \setcounter{exercice@temp}{\mnToPoint@integer{#1}}
+  \addtocounter{exercice@points@integer@total}{\value{exercice@temp}}%
+  % Decimal part
+  \setcounter{exercice@temp}{\mnToPoint@decimalI{#1}}%200*#1/\totalduration-(20*#1/\totalduration)*10}
+  \setcounter{z}{\mnToPoint@decimalII{#1}}%2000*#1/\totalduration-(200*#1/\totalduration)*10}
+  \ifnum\value{z}<5\else\stepcounter{exercice@temp}\fi
+  \addtocounter{exercice@points@decimal@total}{\value{exercice@temp}}
+  % Correction of integer part in case it is necessary
+  \ifnum\value{exercice@points@decimal@total}>9
+    \setcounter{exercice@points@decimal@total}{\value{exercice@points@decimal@total}-10}%
+    \stepcounter{exercice@points@integer@total}
+  \else
+  \fi
+}
+
+\RequirePackage{xkeyval}
+\RequirePackage{translate}
+\define@key[exercice]{exercice}{name}{\def\exercice@name{#1}}
+\define@key[exercice]{exercice}{label}{\def\exercice@label{#1}}
+\define@key[exercice]{exercice}{text}{\def\exercice@text{}\def\exercice@textmacro{#1}}
+\define@key[exercice]{exercice}{color}{\def\exercice@color{#1}}
+\define@key[exercice]{exercice}{before}{\def\exercice@before{#1}}
+\define@key[exercice]{exercice}{after}{\def\exercice@after{#1}}
+\define@key[exercice]{exercice}{command}{\def\exercice@command{#1}}
+\define@key[exercice]{exercice}{body}{\def\exercice@body{#1}}
+\define@key[exercice]{exercice}{counter}{\def\exercice@counter{#1}}
+\define@key[exercice]{exercice}{kind}{\def\exercice@kind{#1}}
+\define@key[exercice]{exercice}{sep}{\def\exercice@sep{#1}}
+\define@key[exercice]{exercice}{execbegin}{\def\exercice@execbegin{#1}}
+\define@key[exercice]{exercice}{execend}{\def\exercice@execend{#1}}
+\define@key[exercice]{exercice}{timing}[]{%
+  \setboolean{exercice@print@timing}{true}%
+  \def\exercice@timing@declared{#1}%
+  \def\exercice@timing{#1}
+}
+\define@key[exercice]{exercice}{points}[]{%
+  \setboolean{exercice@print@points}{true}%
+  \def\exercice@points@declared{#1}%
+  \def\exercice@points{#1}
+}
+\define@boolkey[exercice]{exercice}{loe}[true]{}
+\define@boolkey[exercice]{exercice}{bonus}[true]{}
+\define@boolkey[exercice]{exercice}{notiming}[true]{}
+\define@boolkey[exercice]{exercice}{nopoints}[true]{}
+
+\newcommand*{\exerciseStyle}[1]{\presetkeys[exercice]{exercice}{#1}{}}
+
+\newcommand*{\init@timingandpoints}[3]{%
+  #3
+  \ifx\exercice@timing@declared\@empty\relax
+    \ifx\exercice@points@declared\@empty\relax
+      \def\exercice@timing{#1}
+      \def\exercice@points{#2}
+    \else
+      % A revoir, cas ou les points uniquement sont definis
+    \fi
+  \else
+    \exercice@set@timing{\exercice@timing}
+  \fi
+}
+\presetkeys[exercice]{exercice}{label=,name=,text=,body=,counter=exercice@exercice,kind=Exercise}{}
+\AtBeginDocument{
+  \ifthenelse{\boolean{exercice@boolean@simple}}{%
+    \presetkeys[exercice]{exercice}{before=\triangledanslamarge,sep=\exercice@colon,after=\endgraf,command=\textbf,color=,execbegin=\endgraf,execend=\endgraf}{}
+  }{
+    \presetkeys[exercice]{exercice}{before=,after=,sep=}{}%
+    \ifthenelse{\boolean{exercice@boolean@total}}{%
+      \def\exercice@begin@exo{%
+        \init@timingandpoints{\ref{exo\the\c@exercice@exercice:temps}}{\ref{exo\the\c@exercice@exercice:points}}{\exercice@set@timing{0}}%
+      }
+      \def\exercice@end@exo{%
+        \addtocounter{exercice@timing@total}{-1}%
+        \refstepcounter{exercice@timing@total}%
+        \label{exo\the\c@exercice@exercice:temps}%
+        \edef\@currentlabel{%
+          \theexercice@points@integer@total%
+          \ifnum\theexercice@points@decimal@total>0%
+          ,\theexercice@points@decimal@total%
+          \else%
+          \fi
+        }%
+        \label{exo\the\c@exercice@exercice:points}%
+        \addtocounter{tempstotal}{\theexercice@timing@total}%
+      }
+      \presetkeys[exercice]{exercice}{command=\exercice@section,color=,timing,points,execbegin=\exercice@begin@exo,execend=\exercice@end@exo}{}%
+    }{%
+      \presetkeys[exercice]{exercice}{command=\exercice@subsection,color=blue,execbegin=,execend=}{}%
+    }%
+  }
+}
+\newcommand{\print@timing@points}[2][]{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\@empty%
+    [#2 mn -- \mnToPoint{#2}/20]%
+  \else%
+    [#2 mn -- #1/20]%
+  \fi%
+}
+
+\def\exercice{\@ifnextchar[\@exercice{\@exercice[]}}
+\def\@exercice[#1]{
+  \ifthenelse{\boolean{exercice@boolean@allExoInLoe}}{%
+    \setkeys[exercice]{exercice}{loe}%
+  }{}%
+  \setkeys[exercice]{exercice}{#1}%
+  \def\exercice@leadingname{\translate{\exercice@kind}}
+  %\def\exercice@leadingname{\exercice@kind}
+  \ifexercice@exercice@notiming%
+    \setboolean{exercice@print@timing}{false}
+  \else%
+  \fi%
+  \ifexercice@exercice@nopoints%
+    \setboolean{exercice@print@points}{false}
+  \else%
+  \fi%
+  \ifx\exercice@execbegin\@empty\else\exercice@execbegin\fi%
+  \ifx\exercice@counter\@empty\else\refstepcounter{\exercice@counter}\fi%
+  % Le texte pour bonus ou temps et/ou points
+  \ifexercice@exercice@bonus%
+    \def\exercice@tp@info{Bonus}%      
+  \else%
+    \ifthenelse{\boolean{exercice@print@timing}}{%
+      \ifthenelse{\boolean{exercice@print@points}}{%
+        \ifx\exercice@points\@empty\relax%
+          \def\exercice@tp@info{\print@timing@points{\exercice@timing}}%
+        % \show\exercice@tp@info
+        \else%
+          \def\exercice@tp@info{\print@timing@points[\exercice@points]{\exercice@timing}}%        
+        \fi%
+      }{%
+        \def\exercice@tp@info{[\exercice@timing mn]}%        
+      }%
+    }{%
+      \ifthenelse{\boolean{exercice@print@points}}{%
+        \def\exercice@tp@info{[\exercice@points/20]}%        
+      }{%
+        \def\exercice@tp@info{}%
+      }%
+    }%
+  \fi%
+  % Le texte de titre de l'exercice
+  \ifx\exercice@text\@empty
+    \ifx\exercice@textmacro\@empty
+      \ifx\exercice@counter\@empty
+        \def\exercice@counter@text{}%
+      \else
+        \def\exercice@counter@text{ \expandafter\csname the\exercice@counter\endcsname{}}%
+      \fi
+      \ifx\exercice@name\@empty
+        \def\exercice@middle@text{\exercice@sep}%
+      \else
+        \def\exercice@middle@text{ (\emph{\exercice@name})\exercice@sep}%
+      \fi%
+      \def\exercice@text{\exercice@leadingname\exercice@counter@text\exercice@middle@text}%
+    \else
+      \ifx\exercice@counter\@empty
+        \def\exercice@text{\exercice@textmacro{}}
+      \else
+        \def\exercice@text{\exercice@textmacro{\expandafter\csname the\exercice@counter\endcsname{}}}
+      \fi
+    \fi%
+  \else\fi%
+  \ifx\exercice@label\@empty\else\label{\exercice@label}\fi%
+  \ifx\exercice@tp@info\@empty%
+    \def\exercice@ligne{\exercice@text}%
+  \else%
+    \def\exercice@ligne{\exercice@text\hfill\exercice@tp@info}%
+  \fi%
+  \ifx\exercice@color\@empty%
+    \exercice@before\exercice@command{\exercice@ligne}\exercice@after%
+  \else%
+    \exercice@before\exercice@command{{\color{\exercice@color}\exercice@ligne}}\exercice@after%
+  \fi%
+  \ifexercice@exercice@loe%
+    \addcontentsline{loe}{exo}{\hbox to 11cm{\exercice@text\hfill}\exercice@tp@info}
+  \else%
+  \fi%
+  \normalfont\exercice@body%
+  \setboolean{exercice@print@timing}{false}%
+  \setboolean{exercice@print@points}{false}%
+}
+\def\endexercice{\ifx\exercice@execend\@empty\else\exercice@execend\fi}
+\def\exercice@qo{after=,kind=Question,command=\textbf,counter=exercice@question,color=,loe=false}%
+\newenvironment{question}[1][]{%
+  \ifthenelse{\boolean{exercice@boolean@simple}}{%
+    \expandafter\exercice\expandafter[\exercice@qo,before=\endgraf\normalfont,body=\itshape,#1]
+  }{%
+    \ifthenelse{\boolean{exercice@boolean@total}}{%
+      \expandafter\exercice\expandafter[\exercice@qo,command=\exercice@subsection,execbegin={\ifexercice@exercice@bonus\else\exercice@add@timing{\exercice@timing}\fi},execend=,#1]
+    }{%
+      \expandafter\exercice\expandafter[\exercice@qo,before=\endgraf\triangledanslamarge\normalfont,sep=\exercice@colon,body=\endgraf\bfseries\vspace*{-1.5mm},#1]
+    }%
+  }%
+}{%
+  \endexercice%
+}%
+\newenvironment{laquestion}{\par\medskip\bfseries\triangledanslamarge}{}
+
+\newlength{\reponse@height}
+\define@key[exercice]{reponse}{height}{\setlength\reponse@height{#1}}
+\define@boolkey[exercice]{reponse}{timingask}[true]{}
+\define@boolkey[exercice]{reponse}{appear}[true]{}
+\presetkeys[exercice]{reponse}{height=0mm,timingask}{}
+\def\reponse{\@ifnextchar[\@reponse{\@reponse[]}}
+\def\@reponse[#1]{
+  \ifthenelse{\boolean{exercice@boolean@answer} \AND \(\NOT\boolean{tb@mode@correction}\)}{%
+    \setkeys[exercice]{reponse}{appear}
+  }{
+    \setkeys[exercice]{reponse}{appear=false}
+  }
+  \setkeys[exercice]{reponse}{#1}%
+  \ifexercice@reponse@appear%
+    \begin{breakbox}%
+  \else%
+  \fi%
+}%
+\def\endreponse{%
+  \ifexercice@reponse@appear%
+    \ifdim\reponse@height>0pt%
+     \setlength\reponse@height{\reponse@height/4}
+      \vspace{\reponse@height}%
+      \vspace{\reponse@height}%
+      \vspace{\reponse@height}%
+      \vspace{\reponse@height}%
+    \else%
+    \fi%
+    \ifexercice@reponse@timingask%
+      \begin{flushright}%
+        Temps pass� : \hbox to 2cm{\dotfill}%
+      \end{flushright}%
+      \vspace{-5mm}%
+    \else%
+    \fi%
+    \end{breakbox}%
+  \else%
+  \fi%
+}%

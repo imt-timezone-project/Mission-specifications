@@ -1,0 +1,17 @@
+\RequirePackage{ifthen}
+\newboolean{translate@boolean@french}
+\setboolean{translate@boolean@french}{false}
+\DeclareOption{french}{
+  \setboolean{translate@boolean@french}{true}
+}%
+
+\ProcessOptions\relax%
+\ifthenelse{\boolean{translate@boolean@french}}{
+  \RequirePackage{translator}
+  \uselanguage{French}
+  \languagealias{french}{French}
+  \usedictionary{translator-theorem-dictionary}
+  \providetranslation{Progress}{Avancement}
+}{
+  \newcommand*{\translate}[1]{#1}
+}
