@@ -462,7 +462,6 @@
 % Definition of environment sujet and modification of correction
 % - correction: text in red and indicating we are in a correction part (used for the style of listings)
 % - sujet: similar to modes (but directed by the correction option)
-\RequirePackage{boites-tb}
 
 \newcommand{\forceCorrection}{
   \colorlet{shadecolor}{red!10!white}
@@ -495,8 +494,6 @@
   }{}
 }
 
-\setlength{\FrameSep}{4mm}
-\setlength{\FrameRule}{1pt}
 
 \ifthenelse{\boolean{tb@mode@correction}}{%
   \renewenvironment{correction}{%
